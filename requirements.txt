@@ -17,3 +17,4 @@ platformdirs==3.5.1
 python-dotenv==1.0.0
 sqlparse==0.4.4
 yarl==1.9.2
+djangorestframework~=3.14.0
