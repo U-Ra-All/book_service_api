@@ -1,15 +1,12 @@
-from datetime import datetime
-
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils import timezone
 
 from books.models import Book
 
 
 class Borrowing(models.Model):
-    borrow_date = models.DateTimeField(auto_now_add=True)
+    borrow_date = models.DateTimeField()
     expected_return_date = models.DateTimeField()
     actual_return_date = models.DateTimeField(blank=True, null=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="borrowings")
@@ -18,13 +15,13 @@ class Borrowing(models.Model):
     )
 
     def clean(self):
-        if self.expected_return_date <= timezone.now():
+        if self.expected_return_date <= self.borrow_date:
             raise ValidationError(
                 "expected_return_date should be later than current date"
             )
         if (
             not self.actual_return_date is None
-            and self.actual_return_date <= timezone.now()
+            and self.actual_return_date <= self.borrow_date
         ):
             raise ValidationError(
                 "actual_return_date should be later than current date"
