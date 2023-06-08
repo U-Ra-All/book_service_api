@@ -21,6 +21,14 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
         return BorrowingSerializer
 
+    def get_queryset(self):
+        queryset = self.queryset
+
+        if not self.request.user.is_staff:
+            queryset = Borrowing.objects.filter(user=self.request.user)
+
+        return queryset
+
 
 class CreateBorrowingViewSet(APIView):
     serializer_class = BorrowingSerializer
