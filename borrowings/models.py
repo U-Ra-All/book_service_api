@@ -22,7 +22,10 @@ class Borrowing(models.Model):
             raise ValidationError(
                 "expected_return_date should be later than current date"
             )
-        if self.actual_return_date <= timezone.now():
+        if (
+            not self.actual_return_date is None
+            and self.actual_return_date <= timezone.now()
+        ):
             raise ValidationError(
                 "actual_return_date should be later than current date"
             )
