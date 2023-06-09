@@ -1,3 +1,6 @@
+import os
+
+import requests
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
@@ -12,8 +15,8 @@ from borrowings.serializers import (
     BorrowingSerializer,
     BorrowingDetailSerializer,
     BorrowingReturnSerializer,
+    BorrowingCreateSerializer,
 )
-from users.models import User
 
 
 class BorrowingViewSet(viewsets.ModelViewSet):
@@ -44,8 +47,24 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+def send_message(borrow_date, expected_return_date, book, user):
+    url = os.getenv("TELEGRAM_BOT_SEND_MESSAGE_URL")
+    params = dict(
+        chat_id=os.getenv("TELEGRAM_CHAT_ID"),
+        text=f"The borrowing created: "
+        f"borrow_date: {borrow_date}, "
+        f"expected_return_date: {expected_return_date}, "
+        f"book: {book}, "
+        f"user: {user}.",
+    )
+
+    print("send_message")
+
+    requests.get(url, params=params)
+
+
 class CreateBorrowingViewSet(APIView):
-    serializer_class = BorrowingSerializer
+    serializer_class = BorrowingCreateSerializer
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -68,6 +87,13 @@ class CreateBorrowingViewSet(APIView):
             borrow_date=borrow_date,
             expected_return_date=expected_return_date,
             actual_return_date=actual_return_date,
+            book=book,
+            user=user,
+        )
+
+        send_message(
+            borrow_date=borrow_date,
+            expected_return_date=expected_return_date,
             book=book,
             user=user,
         )
