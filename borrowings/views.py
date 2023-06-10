@@ -3,6 +3,8 @@ import os
 import requests
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -31,7 +33,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         is_active = self.request.query_params.get("is_active")
-        user_id_str = self.request.query_params.get("is_active")
+        user_id_str = self.request.query_params.get("user_id")
 
         queryset = self.queryset
 
@@ -45,6 +47,24 @@ class BorrowingViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(user=self.request.user)
 
         return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "is_active",
+                type=OpenApiTypes.STR,
+                description="Filter by active (not returned) borrowings. "
+                "You can use any value for this parameter (ex. ?is_active=sfs)",
+            ),
+            OpenApiParameter(
+                "user_id",
+                type=OpenApiTypes.INT,
+                description="Filter by user id (ex. ?user_id=2)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 def send_message(borrow_date, expected_return_date, book, user):
