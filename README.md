@@ -25,6 +25,7 @@ SECRET_KEY = "Your_Super_Secret_Key"
 ```
 
 ## To get access to admin panel go to
+
 - /admin
 
 You can use the following superuser (or create another one by yourself):
@@ -35,6 +36,7 @@ Password: 7QancRe2
 ```
 
 ## Getting access
+
 - create user via /api/user/register/
 - create user profile via /api/profiles/create
 - get access token via /api/user/token/
