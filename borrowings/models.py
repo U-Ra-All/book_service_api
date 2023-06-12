@@ -23,9 +23,7 @@ class Borrowing(models.Model):
             not self.actual_return_date is None
             and self.actual_return_date <= self.borrow_date
         ):
-            raise ValidationError(
-                "actual_return_date should be later than borrow_date"
-            )
+            raise ValidationError("actual_return_date should be later than borrow_date")
 
     def save(
         self,
