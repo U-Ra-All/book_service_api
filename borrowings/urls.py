@@ -12,7 +12,11 @@ router.register("", BorrowingViewSet)
 
 urlpatterns = [
     path("create/", CreateBorrowingViewSet.as_view()),
-    path("return/<int:pk>/", ReturnBorrowingViewSet.as_view()),
+    path(
+        "return/<int:pk>/",
+        ReturnBorrowingViewSet.as_view(),
+        name="return",
+    ),
     path("", include(router.urls)),
 ]
 
