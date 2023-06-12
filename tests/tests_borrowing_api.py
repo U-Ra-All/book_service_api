@@ -91,6 +91,54 @@ class AuthenticatedBorrowingApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
+    def test_filter_borrowings_by_active(self):
+        Borrowing.objects.create(
+            borrow_date="2023-06-10",
+            expected_return_date="2023-06-11",
+            book=self.book,
+            user=self.user,
+        )
+
+        Borrowing.objects.create(
+            borrow_date="2023-06-10",
+            expected_return_date="2023-06-12",
+            actual_return_date="2023-06-12",
+            book=self.book,
+            user=self.user,
+        )
+
+        response = self.client.get(BORROWING_URL, {"is_active": "sfd"})
+
+        borrowings = Borrowing.objects.filter(actual_return_date=None)
+        serializer = BorrowingDetailSerializer(borrowings, many=True)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_filter_borrowings_by_user_id(self):
+        Borrowing.objects.create(
+            borrow_date="2023-06-10",
+            expected_return_date="2023-06-11",
+            book=self.book,
+            user=self.user,
+        )
+
+        Borrowing.objects.create(
+            borrow_date="2023-06-10",
+            expected_return_date="2023-06-12",
+            actual_return_date="2023-06-12",
+            book=self.book,
+            user=self.user1,
+        )
+
+        response = self.client.get(BORROWING_URL, {"user_id": "1"})
+
+        borrowings = Borrowing.objects.filter(user_id=1)
+        serializer = BorrowingDetailSerializer(borrowings, many=True)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
     def test_create_borrowing(self):
         payload = {
             "borrow_date": "2023-06-10 21:00:00+00:00",
