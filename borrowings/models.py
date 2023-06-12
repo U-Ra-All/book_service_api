@@ -17,14 +17,14 @@ class Borrowing(models.Model):
     def clean(self):
         if self.expected_return_date <= self.borrow_date:
             raise ValidationError(
-                "expected_return_date should be later than current date"
+                "expected_return_date should be later than borrow_date"
             )
         if (
             not self.actual_return_date is None
             and self.actual_return_date <= self.borrow_date
         ):
             raise ValidationError(
-                "actual_return_date should be later than current date"
+                "actual_return_date should be later than borrow_date"
             )
 
     def save(
