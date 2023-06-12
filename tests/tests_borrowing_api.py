@@ -67,7 +67,7 @@ class AuthenticatedBorrowingApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(response.data, serializer.data)
 
-    def test_not_list_only_own_borrowings(self):
+    def test_list_only_own_borrowings(self):
         Borrowing.objects.create(
             borrow_date="2023-06-10",
             expected_return_date="2023-06-11",
